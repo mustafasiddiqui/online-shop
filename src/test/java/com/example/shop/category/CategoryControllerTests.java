@@ -1,5 +1,7 @@
 package com.example.shop.category;
 
+import com.example.shop.util.TestHelper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -7,12 +9,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -60,4 +64,35 @@ public class CategoryControllerTests {
 
     }
 
+    @Test
+    public void addCategory() throws Exception {
+        Category newCategory = new Category("cat-new");
+        given(categoryService.getCategoryByName(any(String.class)))
+                .willReturn(null);
+
+        mockMvc.perform(post("/category")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(TestHelper.asJsonString(newCategory)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "http://localhost/category/cat-new"));
+
+        verify(categoryService).getCategoryByName(any(String.class));
+
+    }
+
+
+    @Test
+    public void addDuplicateCategory() throws Exception {
+        Category newCategory = new Category("cat-new");
+        given(categoryService.getCategoryByName(any(String.class)))
+                .willReturn(new Category("cat-new", "cat-parent"));
+
+        mockMvc.perform(post("/category")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(TestHelper.asJsonString(newCategory)))
+                .andExpect(status().isConflict());
+
+        verify(categoryService).getCategoryByName(any(String.class));
+
+    }
 }
