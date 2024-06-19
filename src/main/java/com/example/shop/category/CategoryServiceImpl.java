@@ -27,4 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
     }
+
+    public void removeCategoryByName(String categoryName) {
+        categoryRepository.deleteByName(categoryName);
+    }
 }

@@ -8,4 +8,6 @@ public interface CategoryService {
     Category getCategoryByName(String categoryName);
 
     Category saveCategory(Category category);
+
+    void removeCategoryByName(String categoryName);
 }
