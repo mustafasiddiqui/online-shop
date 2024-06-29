@@ -29,9 +29,11 @@ public class CategoryControllerTests {
     @MockBean
     private CategoryService categoryService;
 
+    private static final String RANDOM_ID = "randomId";
+
     @Test
     public void categoryDetails() throws Exception {
-        given(categoryService.getCategoryById("randomId")).willReturn(new Category("cat-foo", "cat-parent"));
+        given(categoryService.getCategoryById(RANDOM_ID)).willReturn(new Category("cat-foo", "cat-parent"));
 
         mockMvc.perform(get("/category/randomId"))
                 .andDo(print())
@@ -40,7 +42,7 @@ public class CategoryControllerTests {
                 .andExpect(jsonPath("name").value("cat-foo"))
                 .andExpect(jsonPath("parentId").value("cat-parent"));
 
-        verify(categoryService).getCategoryById("randomId");
+        verify(categoryService).getCategoryById(RANDOM_ID);
     }
 
     @Test
@@ -67,7 +69,7 @@ public class CategoryControllerTests {
     @Test
     public void addCategory() throws Exception {
         Category newCategory = new Category("cat-new");
-        newCategory.setId("randomId");
+        newCategory.setId(RANDOM_ID);
         given(categoryService.getCategoryByName(any(String.class)))
                 .willReturn(null);
 
@@ -99,37 +101,39 @@ public class CategoryControllerTests {
 
     @Test
     public void updateCategory() throws Exception {
-        Category category = new Category("cat-new");
+        Category category = new Category("cat-main");
+        category.setId(RANDOM_ID);
 
-        given(categoryService.getCategoryByName("cat-new"))
+        given(categoryService.getCategoryById(RANDOM_ID))
                 .willReturn(category);
 
-        Category requestBody = new Category("cat-main", "cat-parent");
+        Category requestBody = new Category("cat-new", "cat-parent");
 
-        mockMvc.perform(put("/category/cat-new")
+        mockMvc.perform(put("/category/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNoContent());
 
-        verify(categoryService).getCategoryByName("cat-new");
-        assertEquals("cat-main", category.getName());
+        verify(categoryService).getCategoryById(RANDOM_ID);
+        assertEquals(RANDOM_ID, category.getId());
+        assertEquals("cat-new", category.getName());
         assertEquals("cat-parent", category.getParentId());
     }
 
     @Test
     public void updateNonexistentCategory() throws Exception {
 
-        given(categoryService.getCategoryByName(any(String.class)))
+        given(categoryService.getCategoryById(any(String.class)))
                 .willReturn(null);
 
-        Category requestBody = new Category("cat-main", "cat-parent");
+        Category requestBody = new Category("cat-new", "cat-parent");
 
-        mockMvc.perform(put("/category/cat-new")
+        mockMvc.perform(put("/category/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNotFound());
 
-        verify(categoryService).getCategoryByName("cat-new");
+        verify(categoryService).getCategoryById(RANDOM_ID);
     }
 
     @Test

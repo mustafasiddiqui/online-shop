@@ -44,9 +44,9 @@ public class CategoryController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/category/{categoryName}")
-    public ResponseEntity<Void> updateCategory(@PathVariable String categoryName, @RequestBody Category updatedCategory) {
-        Category category = categoryService.getCategoryByName(categoryName);
+    @PutMapping("/category/{categoryId}")
+    public ResponseEntity<Void> updateCategory(@PathVariable String categoryId, @RequestBody Category updatedCategory) {
+        Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
             return ResponseEntity.notFound().build();
         }
