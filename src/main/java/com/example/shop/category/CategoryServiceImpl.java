@@ -23,6 +23,10 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByName(categoryName);
     }
 
+    public Category getCategoryById(String categoryId) {
+        return categoryRepository.findById(categoryId).orElse(null);
+    }
+
     @Override
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);

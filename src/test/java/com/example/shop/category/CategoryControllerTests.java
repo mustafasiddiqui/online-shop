@@ -31,16 +31,16 @@ public class CategoryControllerTests {
 
     @Test
     public void categoryDetails() throws Exception {
-        given(categoryService.getCategoryByName("cat-foo")).willReturn(new Category("cat-foo", "cat-parent"));
+        given(categoryService.getCategoryById("randomId")).willReturn(new Category("cat-foo", "cat-parent"));
 
-        mockMvc.perform(get("/category/cat-foo"))
+        mockMvc.perform(get("/category/randomId"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
                 .andExpect(jsonPath("name").value("cat-foo"))
                 .andExpect(jsonPath("parentId").value("cat-parent"));
 
-        verify(categoryService).getCategoryByName("cat-foo");
+        verify(categoryService).getCategoryById("randomId");
     }
 
     @Test

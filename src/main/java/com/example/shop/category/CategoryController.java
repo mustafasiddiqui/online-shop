@@ -22,9 +22,9 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/category/{categoryName}")
-    public Category getCategory(@PathVariable String categoryName) {
-        return categoryService.getCategoryByName(categoryName);
+    @GetMapping("/category/{categoryId}")
+    public Category getCategory(@PathVariable String categoryId) {
+        return categoryService.getCategoryById(categoryId);
     }
 
     @PostMapping("/category")
