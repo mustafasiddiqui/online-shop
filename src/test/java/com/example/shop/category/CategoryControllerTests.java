@@ -139,14 +139,15 @@ public class CategoryControllerTests {
     @Test
     public void deleteCategory() throws Exception {
         Category category = new Category("cat-new");
+        category.setId(RANDOM_ID);
 
-        given(categoryService.getCategoryByName("cat-new"))
+        given(categoryService.getCategoryById(RANDOM_ID))
                 .willReturn(category);
 
-        mockMvc.perform(delete("/category/cat-new"))
+        mockMvc.perform(delete("/category/randomId"))
                 .andExpect(status().isNoContent());
 
-        verify(categoryService).getCategoryByName("cat-new");
+        verify(categoryService).getCategoryById(RANDOM_ID);
 
         assertEquals("cat-new", category.getName());
         assertNull(category.getParentId());
@@ -155,12 +156,12 @@ public class CategoryControllerTests {
     @Test
     public void deleteNonexistentCategory() throws Exception {
 
-        given(categoryService.getCategoryByName("cat-new"))
+        given(categoryService.getCategoryById(any(String.class)))
                 .willReturn(null);
 
-        mockMvc.perform(delete("/category/cat-new"))
+        mockMvc.perform(delete("/category/randomId"))
                 .andExpect(status().isNotFound());
 
-        verify(categoryService).getCategoryByName("cat-new");
+        verify(categoryService).getCategoryById(RANDOM_ID);
     }
 }

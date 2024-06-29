@@ -59,14 +59,14 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/category/{categoryName}")
-    public ResponseEntity<Void> removeCategory(@PathVariable String categoryName) {
-        Category category = categoryService.getCategoryByName(categoryName);
+    @DeleteMapping("/category/{categoryId}")
+    public ResponseEntity<Void> removeCategory(@PathVariable String categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
             return ResponseEntity.notFound().build();
         }
 
-        categoryService.removeCategoryByName(categoryName);
+        categoryService.removeCategoryById(categoryId);
         return ResponseEntity.noContent().build();
     }
 }
