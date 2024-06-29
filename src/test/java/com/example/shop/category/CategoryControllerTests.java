@@ -67,6 +67,7 @@ public class CategoryControllerTests {
     @Test
     public void addCategory() throws Exception {
         Category newCategory = new Category("cat-new");
+        newCategory.setId("randomId");
         given(categoryService.getCategoryByName(any(String.class)))
                 .willReturn(null);
 
@@ -74,7 +75,7 @@ public class CategoryControllerTests {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(newCategory)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/category/cat-new"));
+                .andExpect(header().string("Location", "http://localhost/category/randomId"));
 
         verify(categoryService).getCategoryByName(any(String.class));
 

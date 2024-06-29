@@ -38,8 +38,8 @@ public class CategoryController {
         categoryService.saveCategory(newCategory);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
-                .path("/{categoryName}")
-                .buildAndExpand(newCategory.getName())
+                .path("/{categoryId}")
+                .buildAndExpand(newCategory.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
     }
