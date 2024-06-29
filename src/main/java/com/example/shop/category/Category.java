@@ -1,9 +1,15 @@
 package com.example.shop.category;
 
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
+@Getter
+@Setter
+@Document
 public class Category {
-    @Id
+    @MongoId
     private String id;
     private String name;
     private String parentId;
@@ -18,34 +24,5 @@ public class Category {
     public Category(String name, String parentId) {
         this.name = name;
         this.parentId = parentId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Category [id=%1$s, name=%2$s, parentId=%3$s]", id, name, parentId);
     }
 }
