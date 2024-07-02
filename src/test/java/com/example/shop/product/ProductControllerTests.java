@@ -1,5 +1,6 @@
 package com.example.shop.product;
 
+import com.example.shop.category.Category;
 import com.example.shop.util.TestHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,9 @@ public class ProductControllerTests {
 
     @Test
     public void productDetails() throws Exception {
-        Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", "category-tops");
+        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", "category-parent"),
+                new Category("id2", "category-men", "category-root"));
+        Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories);
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
         mockMvc.perform(get("/product/randomId"))
@@ -40,16 +43,23 @@ public class ProductControllerTests {
                 .andExpect(jsonPath("id").value(RANDOM_ID))
                 .andExpect(jsonPath("name").value("product-shirt"))
                 .andExpect(jsonPath("sku").value("SKU-1234"))
-                .andExpect(jsonPath("categoryId").value("category-tops"));
+                .andExpect(jsonPath("$.categories[0]id").value("id1"))
+                .andExpect(jsonPath("$.categories[0]name").value("category-tops"))
+                .andExpect(jsonPath("$.categories[0]parentId").value("category-parent"))
+                .andExpect(jsonPath("$.categories[1]id").value("id2"))
+                .andExpect(jsonPath("$.categories[1]name").value("category-men"))
+                .andExpect(jsonPath("$.categories[1]parentId").value("category-root"));
 
         verify(productService).getProductById(RANDOM_ID);
     }
 
     @Test
     public void productSummary() throws Exception {
+        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", "category-parent"),
+                new Category("id2", "category-men", "category-root"));
 
-        List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", "category-tops"),
-                new Product("randomId2", "product-blouse", "SKU-1235", "category-tops"));
+        List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories),
+                new Product("randomId2", "product-blouse", "SKU-1235", categories));
         given(productService.getAllProducts())
                 .willReturn(testProducts);
 
@@ -60,18 +70,22 @@ public class ProductControllerTests {
                 .andExpect(jsonPath("$[0]id").value(RANDOM_ID))
                 .andExpect(jsonPath("$[0]name").value("product-shirt"))
                 .andExpect(jsonPath("$[0]sku").value("SKU-1234"))
-                .andExpect(jsonPath("$[0]categoryId").value("category-tops"))
+                .andExpect(jsonPath("$[0]categories[0]id").value("id1"))
+                .andExpect(jsonPath("$[0]categories[0]name").value("category-tops"))
+                .andExpect(jsonPath("$[0]categories[0]parentId").value("category-parent"))
                 .andExpect(jsonPath("$[1]id").value("randomId2"))
                 .andExpect(jsonPath("$[1]name").value("product-blouse"))
                 .andExpect(jsonPath("$[1]sku").value("SKU-1235"))
-                .andExpect(jsonPath("$[1]categoryId").value("category-tops"));
+                .andExpect(jsonPath("$[1]categories[1]id").value("id2"))
+                .andExpect(jsonPath("$[1]categories[1]name").value("category-men"))
+                .andExpect(jsonPath("$[1]categories[1]parentId").value("category-root"));
 
         verify(productService).getAllProducts();
     }
 
     @Test
     public void addProduct() throws Exception {
-        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new", "category-new");
+        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new");
         given(productService.getProductByName("product-new"))
                 .willReturn(null);
 
@@ -86,7 +100,7 @@ public class ProductControllerTests {
 
     @Test
     public void addDuplicateProduct() throws Exception {
-        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new", "category-new");
+        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new");
         given(productService.getProductByName("product-new"))
                 .willReturn(new Product(null, "product-new", null, null));
 
@@ -104,7 +118,7 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
-        Product requestBody = new Product(null, "name-new", "SKU-new", "category-new");
+        Product requestBody = new Product(null, "name-new", "SKU-new");
 
         mockMvc.perform(put("/product/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -120,7 +134,7 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(null);
 
-        Product requestBody = new Product(null, "name-new", "SKU-new", "category-new");
+        Product requestBody = new Product(null, "name-new", "SKU-new");
 
         mockMvc.perform(put("/product/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

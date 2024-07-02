@@ -1,5 +1,6 @@
 package com.example.shop.category;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @Document
 public class Category {
     @MongoId
@@ -22,7 +24,6 @@ public class Category {
     }
 
     public Category(String name, String parentId) {
-        this.name = name;
-        this.parentId = parentId;
+        this(null, name, parentId);
     }
 }

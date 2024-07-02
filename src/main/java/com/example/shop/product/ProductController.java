@@ -61,7 +61,7 @@ class ProductController {
     private void copy(Product source, Product target) {
         target.setName(source.getName());
         target.setSku(source.getSku());
-        target.setCategoryId(source.getCategoryId());
+        target.setCategories(source.getCategories());
     }
 
     @DeleteMapping("/product/{productId}")
