@@ -31,16 +31,20 @@ public class CategoryControllerTests {
 
     private static final String RANDOM_ID = "randomId";
 
+    Category parentCategory = new Category("id1", "category-parent", null);
+
     @Test
     public void categoryDetails() throws Exception {
-        given(categoryService.getCategoryById(RANDOM_ID)).willReturn(new Category("cat-foo", "cat-parent"));
+        given(categoryService.getCategoryById(RANDOM_ID)).willReturn(new Category("cat-foo", parentCategory));
 
         mockMvc.perform(get("/category/randomId"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
                 .andExpect(jsonPath("name").value("cat-foo"))
-                .andExpect(jsonPath("parentId").value("cat-parent"));
+                .andExpect(jsonPath("parentCategory.id").value("id1"))
+                .andExpect(jsonPath("parentCategory.name").value("category-parent"))
+                .andExpect(jsonPath("parentCategory.parentCategory").doesNotExist());
 
         verify(categoryService).getCategoryById(RANDOM_ID);
     }
@@ -48,7 +52,7 @@ public class CategoryControllerTests {
     @Test
     public void categorySummary() throws Exception {
 
-        List<Category> testCategories = Arrays.asList(new Category("cat-shirts", "cat-tops"),
+        List<Category> testCategories = Arrays.asList(new Category("cat-shirts", parentCategory),
                 new Category("cat-blouses"));
         given(categoryService.getAllCategories())
                 .willReturn(testCategories);
@@ -57,10 +61,14 @@ public class CategoryControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0]id").doesNotExist())
                 .andExpect(jsonPath("$[0]name").value("cat-shirts"))
-                .andExpect(jsonPath("$[0]parentId").value("cat-tops"))
+                .andExpect(jsonPath("$[0]parentCategory.id").value("id1"))
+                .andExpect(jsonPath("$[0]parentCategory.name").value("category-parent"))
+                .andExpect(jsonPath("$[0]parentCategory.parentCategory").doesNotExist())
+                .andExpect(jsonPath("$[1]id").doesNotExist())
                 .andExpect(jsonPath("$[1]name").value("cat-blouses"))
-                .andExpect(jsonPath("$[1]parentId").doesNotExist());
+                .andExpect(jsonPath("$[1]parentCategory").doesNotExist());
 
         verify(categoryService).getAllCategories();
 
@@ -88,7 +96,7 @@ public class CategoryControllerTests {
     public void addDuplicateCategory() throws Exception {
         Category newCategory = new Category("cat-new");
         given(categoryService.getCategoryByName(any(String.class)))
-                .willReturn(new Category("cat-new", "cat-parent"));
+                .willReturn(new Category("cat-new", parentCategory));
 
         mockMvc.perform(post("/category")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -107,7 +115,7 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(RANDOM_ID))
                 .willReturn(category);
 
-        Category requestBody = new Category("cat-new", "cat-parent");
+        Category requestBody = new Category("cat-new", parentCategory);
 
         mockMvc.perform(put("/category/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +125,9 @@ public class CategoryControllerTests {
         verify(categoryService).getCategoryById(RANDOM_ID);
         assertEquals(RANDOM_ID, category.getId());
         assertEquals("cat-new", category.getName());
-        assertEquals("cat-parent", category.getParentId());
+        assertEquals("id1", category.getParentCategory().getId());
+        assertEquals("category-parent", category.getParentCategory().getName());
+        assertNull(category.getParentCategory().getParentCategory());
     }
 
     @Test
@@ -126,7 +136,7 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(any(String.class)))
                 .willReturn(null);
 
-        Category requestBody = new Category("cat-new", "cat-parent");
+        Category requestBody = new Category("cat-new", parentCategory);
 
         mockMvc.perform(put("/category/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +160,7 @@ public class CategoryControllerTests {
         verify(categoryService).getCategoryById(RANDOM_ID);
 
         assertEquals("cat-new", category.getName());
-        assertNull(category.getParentId());
+        assertNull(category.getParentCategory());
     }
 
     @Test

@@ -29,10 +29,13 @@ public class ProductControllerTests {
 
     private static final String RANDOM_ID = "randomId";
 
+    Category parentCategory = new Category("id1", "category-parent", null);
+    Category rootCategory = new Category("id2", "category-men", null);
+
     @Test
     public void productDetails() throws Exception {
-        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", "category-parent"),
-                new Category("id2", "category-men", "category-root"));
+        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
+                new Category("id2", "category-men", rootCategory));
         Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories);
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
@@ -45,18 +48,22 @@ public class ProductControllerTests {
                 .andExpect(jsonPath("sku").value("SKU-1234"))
                 .andExpect(jsonPath("$.categories[0]id").value("id1"))
                 .andExpect(jsonPath("$.categories[0]name").value("category-tops"))
-                .andExpect(jsonPath("$.categories[0]parentId").value("category-parent"))
+                .andExpect(jsonPath("$.categories[0]parentCategory.id").value("id1"))
+                .andExpect(jsonPath("$.categories[0]parentCategory.name").value("category-parent"))
+                .andExpect(jsonPath("$.categories[0]parentCategory.parentCategory").doesNotExist())
                 .andExpect(jsonPath("$.categories[1]id").value("id2"))
                 .andExpect(jsonPath("$.categories[1]name").value("category-men"))
-                .andExpect(jsonPath("$.categories[1]parentId").value("category-root"));
+                .andExpect(jsonPath("$.categories[1]parentCategory.id").value("id2"))
+                .andExpect(jsonPath("$.categories[1]parentCategory.name").value("category-men"))
+                .andExpect(jsonPath("$.categories[1]parentCategory.parentCategory").doesNotExist());
 
         verify(productService).getProductById(RANDOM_ID);
     }
 
     @Test
     public void productSummary() throws Exception {
-        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", "category-parent"),
-                new Category("id2", "category-men", "category-root"));
+        List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
+                new Category("id2", "category-men", rootCategory));
 
         List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories),
                 new Product("randomId2", "product-blouse", "SKU-1235", categories));
@@ -72,13 +79,23 @@ public class ProductControllerTests {
                 .andExpect(jsonPath("$[0]sku").value("SKU-1234"))
                 .andExpect(jsonPath("$[0]categories[0]id").value("id1"))
                 .andExpect(jsonPath("$[0]categories[0]name").value("category-tops"))
-                .andExpect(jsonPath("$[0]categories[0]parentId").value("category-parent"))
+                .andExpect(jsonPath("$[0]categories[0]parentCategory.id").value("id1"))
+                .andExpect(jsonPath("$[0]categories[0]parentCategory.name").value("category-parent"))
+                .andExpect(jsonPath("$[0]categories[0]parentCategory.parentCategory").doesNotExist())
+                .andExpect(jsonPath("$[0]categories[1]parentCategory.id").value("id2"))
+                .andExpect(jsonPath("$[0]categories[1]parentCategory.name").value("category-men"))
+                .andExpect(jsonPath("$[0]categories[1]parentCategory.parentCategory").doesNotExist())
                 .andExpect(jsonPath("$[1]id").value("randomId2"))
                 .andExpect(jsonPath("$[1]name").value("product-blouse"))
                 .andExpect(jsonPath("$[1]sku").value("SKU-1235"))
                 .andExpect(jsonPath("$[1]categories[1]id").value("id2"))
                 .andExpect(jsonPath("$[1]categories[1]name").value("category-men"))
-                .andExpect(jsonPath("$[1]categories[1]parentId").value("category-root"));
+                .andExpect(jsonPath("$[1]categories[0]parentCategory.id").value("id1"))
+                .andExpect(jsonPath("$[1]categories[0]parentCategory.name").value("category-parent"))
+                .andExpect(jsonPath("$[1]categories[0]parentCategory.parentCategory").doesNotExist())
+                .andExpect(jsonPath("$[1]categories[1]parentCategory.id").value("id2"))
+                .andExpect(jsonPath("$[1]categories[1]parentCategory.name").value("category-men"))
+                .andExpect(jsonPath("$[1]categories[1]parentCategory.parentCategory").doesNotExist());
 
         verify(productService).getAllProducts();
     }

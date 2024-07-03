@@ -52,7 +52,7 @@ public class CategoryController {
         }
 
         category.setName(updatedCategory.getName());
-        category.setParentId(updatedCategory.getParentId());
+        category.setParentCategory(updatedCategory.getParentCategory());
 
         categoryService.saveCategory(category);
 
