@@ -33,11 +33,13 @@ public class CategoryControllerTests {
 
     Category parentCategory = new Category("id1", "category-parent", null);
 
+    static final String CATEGORY_API_BASE_URL = "/api/category";
+
     @Test
     public void categoryDetails() throws Exception {
         given(categoryService.getCategoryById(RANDOM_ID)).willReturn(new Category("cat-foo", parentCategory));
 
-        mockMvc.perform(get("/category/randomId"))
+        mockMvc.perform(get(CATEGORY_API_BASE_URL + "/randomId"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
@@ -57,7 +59,7 @@ public class CategoryControllerTests {
         given(categoryService.getAllCategories())
                 .willReturn(testCategories);
 
-        mockMvc.perform(get("/category"))
+        mockMvc.perform(get(CATEGORY_API_BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -81,11 +83,11 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryByName(any(String.class)))
                 .willReturn(null);
 
-        mockMvc.perform(post("/category")
+        mockMvc.perform(post(CATEGORY_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(newCategory)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/category/randomId"));
+                .andExpect(header().string("Location", "http://localhost/api/category/randomId"));
 
         verify(categoryService).getCategoryByName(any(String.class));
 
@@ -98,7 +100,7 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryByName(any(String.class)))
                 .willReturn(new Category("cat-new", parentCategory));
 
-        mockMvc.perform(post("/category")
+        mockMvc.perform(post(CATEGORY_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(newCategory)))
                 .andExpect(status().isConflict());
@@ -117,7 +119,7 @@ public class CategoryControllerTests {
 
         Category requestBody = new Category("cat-new", parentCategory);
 
-        mockMvc.perform(put("/category/randomId")
+        mockMvc.perform(put(CATEGORY_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNoContent());
@@ -138,7 +140,7 @@ public class CategoryControllerTests {
 
         Category requestBody = new Category("cat-new", parentCategory);
 
-        mockMvc.perform(put("/category/randomId")
+        mockMvc.perform(put(CATEGORY_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNotFound());
@@ -154,7 +156,7 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(RANDOM_ID))
                 .willReturn(category);
 
-        mockMvc.perform(delete("/category/randomId"))
+        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId"))
                 .andExpect(status().isNoContent());
 
         verify(categoryService).getCategoryById(RANDOM_ID);
@@ -169,7 +171,7 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(any(String.class)))
                 .willReturn(null);
 
-        mockMvc.perform(delete("/category/randomId"))
+        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId"))
                 .andExpect(status().isNotFound());
 
         verify(categoryService).getCategoryById(RANDOM_ID);

@@ -32,6 +32,8 @@ public class ProductControllerTests {
     Category parentCategory = new Category("id1", "category-parent", null);
     Category rootCategory = new Category("id2", "category-men", null);
 
+    static final String PRODUCT_API_BASE_URL = "/api/product";
+
     @Test
     public void productDetails() throws Exception {
         List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
@@ -39,7 +41,7 @@ public class ProductControllerTests {
         Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories);
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
-        mockMvc.perform(get("/product/randomId"))
+        mockMvc.perform(get(PRODUCT_API_BASE_URL + "/randomId"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
@@ -70,7 +72,7 @@ public class ProductControllerTests {
         given(productService.getAllProducts())
                 .willReturn(testProducts);
 
-        mockMvc.perform(get("/product"))
+        mockMvc.perform(get(PRODUCT_API_BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -106,11 +108,11 @@ public class ProductControllerTests {
         given(productService.getProductByName("product-new"))
                 .willReturn(null);
 
-        mockMvc.perform(post("/product")
+        mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(newProduct)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/product/randomId"));
+                .andExpect(header().string("Location", "http://localhost/api/product/randomId"));
 
         verify(productService).getProductByName("product-new");
     }
@@ -121,7 +123,7 @@ public class ProductControllerTests {
         given(productService.getProductByName("product-new"))
                 .willReturn(new Product(null, "product-new", null, null));
 
-        mockMvc.perform(post("/product")
+        mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(newProduct)))
                 .andExpect(status().isConflict());
@@ -137,7 +139,7 @@ public class ProductControllerTests {
 
         Product requestBody = new Product(null, "name-new", "SKU-new");
 
-        mockMvc.perform(put("/product/randomId")
+        mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNoContent());
@@ -153,7 +155,7 @@ public class ProductControllerTests {
 
         Product requestBody = new Product(null, "name-new", "SKU-new");
 
-        mockMvc.perform(put("/product/randomId")
+        mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(TestHelper.asJsonString(requestBody)))
                 .andExpect(status().isNotFound());
@@ -167,7 +169,7 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
-        mockMvc.perform(delete("/product/randomId"))
+        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId"))
                 .andExpect(status().isNoContent());
 
         verify(productService).getProductById(RANDOM_ID);
@@ -179,7 +181,7 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(null);
 
-        mockMvc.perform(delete("/product/randomId"))
+        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId"))
                 .andExpect(status().isNotFound());
 
         verify(productService).getProductById(RANDOM_ID);
