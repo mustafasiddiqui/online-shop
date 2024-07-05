@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 public class ProductCallbacks implements BeforeConvertCallback<Product> {
     @Override
     public Product onBeforeConvert(Product entity, String collection) {
-        System.out.println("Before Convert: " + entity);
         if (entity.getId() == null) {
             entity.setId(collection + "-" + new ObjectId());
         }
