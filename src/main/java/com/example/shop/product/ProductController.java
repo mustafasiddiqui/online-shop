@@ -20,7 +20,10 @@ class ProductController {
     }
 
     @GetMapping("/product")
-    public List<Product> getAllProducts() {
+    public List<Product> getAllProducts(@RequestParam(required = false) String categoryId) {
+        if (categoryId != null) {
+            return productService.getProductsByCategory(categoryId);
+        }
         return productService.getAllProducts();
     }
 

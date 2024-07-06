@@ -13,4 +13,6 @@ public interface ProductService {
     Product saveProduct(Product product);
 
     void removeProductById(String productId);
+
+    List<Product> getProductsByCategory(String categoryId);
 }
