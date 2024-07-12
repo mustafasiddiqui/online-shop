@@ -66,6 +66,7 @@ class ProductController {
     private void copy(Product source, Product target) {
         target.setName(source.getName());
         target.setSku(source.getSku());
+        target.setUrl(source.getUrl());
         target.setCategories(source.getCategories());
     }
 

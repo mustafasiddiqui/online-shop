@@ -24,6 +24,8 @@ public class Product {
 
     private String sku;
 
+    private String url;
+
     @DocumentReference
     List<Category> categories;
 
@@ -31,7 +33,7 @@ public class Product {
     }
 
     Product(String id, String name, String sku) {
-        this(id, name, sku, null);
+        this(id, name, sku, null, null);
     }
 
 }

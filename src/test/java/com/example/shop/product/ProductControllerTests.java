@@ -38,7 +38,7 @@ public class ProductControllerTests {
     public void productDetails() throws Exception {
         List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
                 new Category("id2", "category-men", rootCategory));
-        Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories);
+        Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", null, categories);
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
         mockMvc.perform(get(PRODUCT_API_BASE_URL + "/randomId"))
@@ -67,8 +67,8 @@ public class ProductControllerTests {
         List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
                 new Category("id2", "category-men", rootCategory));
 
-        List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", categories),
-                new Product("randomId2", "product-blouse", "SKU-1235", categories));
+        List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", null, categories),
+                new Product("randomId2", "product-blouse", "SKU-1235", null, categories));
         given(productService.getAllProducts())
                 .willReturn(testProducts);
 
@@ -121,7 +121,7 @@ public class ProductControllerTests {
     public void addDuplicateProduct() throws Exception {
         Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new");
         given(productService.getProductByName("product-new"))
-                .willReturn(new Product(null, "product-new", null, null));
+                .willReturn(new Product(null, "product-new", null, null, null));
 
         mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -133,11 +133,11 @@ public class ProductControllerTests {
 
     @Test
     public void updateProduct() throws Exception {
-        Product product = new Product(RANDOM_ID, "product-shirt", null, null);
+        Product product = new Product(RANDOM_ID, "product-shirt", null, null, null);
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
-        Product requestBody = new Product(null, "name-new", "SKU-new");
+        Product requestBody = new Product(null, "name-new", "SKU-new", "testUrl", null);
 
         mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -165,7 +165,7 @@ public class ProductControllerTests {
 
     @Test
     public void deleteProduct() throws Exception {
-        Product product = new Product(RANDOM_ID, "product-shirt", null, null);
+        Product product = new Product(RANDOM_ID, "product-shirt", null, null, null);
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
