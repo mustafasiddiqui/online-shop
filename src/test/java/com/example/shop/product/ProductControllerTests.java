@@ -104,7 +104,9 @@ public class ProductControllerTests {
 
     @Test
     public void addProduct() throws Exception {
-        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new");
+        Product newProduct = new Product.ProductBuilder()
+                .setId(RANDOM_ID).setName("product-new").setSku("sku-new")
+                .build();
         given(productService.getProductByName("product-new"))
                 .willReturn(null);
 
@@ -119,7 +121,9 @@ public class ProductControllerTests {
 
     @Test
     public void addDuplicateProduct() throws Exception {
-        Product newProduct = new Product(RANDOM_ID, "product-new", "sku-new");
+        Product newProduct = new Product.ProductBuilder()
+                .setId(RANDOM_ID).setName("product-new").setSku("sku-new")
+                .build();
         given(productService.getProductByName("product-new"))
                 .willReturn(new Product(null, "product-new", null, null, null));
 
@@ -153,7 +157,9 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(null);
 
-        Product requestBody = new Product(null, "name-new", "SKU-new");
+        Product requestBody = new Product.ProductBuilder()
+                .setName("name-new").setSku("SKU-new")
+                .build();
 
         mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

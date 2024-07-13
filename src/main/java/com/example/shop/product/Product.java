@@ -32,8 +32,51 @@ public class Product {
     Product() {
     }
 
-    Product(String id, String name, String sku) {
-        this(id, name, sku, null, null);
+    public Product(ProductBuilder builder) {
+        this(builder.id, builder.name, builder.sku, builder.url, builder.categories);
     }
 
+    public static final class ProductBuilder {
+
+        private String id;
+        private String name;
+
+        private String sku;
+
+        private String url;
+
+        private List<Category> categories;
+
+        ProductBuilder() {
+        }
+
+        public ProductBuilder setId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public ProductBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ProductBuilder setSku(String sku) {
+            this.sku = sku;
+            return this;
+        }
+
+        public ProductBuilder setUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public ProductBuilder setCategories(List<Category> categories) {
+            this.categories = categories;
+            return this;
+        }
+
+        Product build() {
+            return new Product(this);
+        }
+    }
 }
