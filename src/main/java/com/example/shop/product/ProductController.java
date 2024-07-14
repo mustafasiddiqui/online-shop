@@ -67,6 +67,7 @@ class ProductController {
         target.setName(source.getName());
         target.setSku(source.getSku());
         target.setUrl(source.getUrl());
+        target.setPrice(source.getPrice());
         target.setCategories(source.getCategories());
     }
 

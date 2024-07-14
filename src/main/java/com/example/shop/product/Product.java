@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Getter
@@ -26,6 +28,7 @@ public class Product {
 
     private String url;
 
+    private BigDecimal price;
     @DocumentReference
     List<Category> categories;
 
@@ -33,7 +36,11 @@ public class Product {
     }
 
     public Product(ProductBuilder builder) {
-        this(builder.id, builder.name, builder.sku, builder.url, builder.categories);
+        this(builder.id, builder.name, builder.sku, builder.url, builder.price, builder.categories);
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public static final class ProductBuilder {
@@ -44,6 +51,8 @@ public class Product {
         private String sku;
 
         private String url;
+
+        private BigDecimal price;
 
         private List<Category> categories;
 
@@ -67,6 +76,11 @@ public class Product {
 
         public ProductBuilder setUrl(String url) {
             this.url = url;
+            return this;
+        }
+
+        public ProductBuilder setPrice(BigDecimal price) {
+            this.price = price;
             return this;
         }
 
