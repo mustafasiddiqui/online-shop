@@ -38,7 +38,9 @@ public class ProductControllerTests {
     public void productDetails() throws Exception {
         List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
                 new Category("id2", "category-men", rootCategory));
-        Product product = new Product(RANDOM_ID, "product-shirt", "SKU-1234", null, categories);
+        Product product = new Product.ProductBuilder()
+                .setId(RANDOM_ID).setName("product-shirt").setSku("SKU-1234").setCategories(categories)
+                .build();
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
         mockMvc.perform(get(PRODUCT_API_BASE_URL + "/randomId"))
@@ -67,8 +69,15 @@ public class ProductControllerTests {
         List<Category> categories = Arrays.asList(new Category("id1", "category-tops", parentCategory),
                 new Category("id2", "category-men", rootCategory));
 
-        List<Product> testProducts = Arrays.asList(new Product(RANDOM_ID, "product-shirt", "SKU-1234", null, categories),
-                new Product("randomId2", "product-blouse", "SKU-1235", null, categories));
+        Product product1 = new Product.ProductBuilder()
+                .setId(RANDOM_ID).setName("product-shirt").setSku("SKU-1234").setCategories(categories)
+                .build();
+
+        Product product2 = new Product.ProductBuilder()
+                .setId("randomId2").setName("product-blouse").setSku("SKU-1235").setCategories(categories)
+                .build();
+
+        List<Product> testProducts = Arrays.asList(product1, product2);
         given(productService.getAllProducts())
                 .willReturn(testProducts);
 
@@ -125,7 +134,7 @@ public class ProductControllerTests {
                 .setId(RANDOM_ID).setName("product-new").setSku("sku-new")
                 .build();
         given(productService.getProductByName("product-new"))
-                .willReturn(new Product(null, "product-new", null, null, null));
+                .willReturn(new Product.ProductBuilder().setName("product-new").build());
 
         mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -137,11 +146,14 @@ public class ProductControllerTests {
 
     @Test
     public void updateProduct() throws Exception {
-        Product product = new Product(RANDOM_ID, "product-shirt", null, null, null);
+        Product product = new Product.ProductBuilder().setId(RANDOM_ID).setName("product-shirt")
+                .build();
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
-        Product requestBody = new Product(null, "name-new", "SKU-new", "testUrl", null);
+        Product requestBody = new Product.ProductBuilder()
+                .setName("name-new").setSku("SKU-new").setUrl("testUrl")
+                .build();
 
         mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -171,7 +183,8 @@ public class ProductControllerTests {
 
     @Test
     public void deleteProduct() throws Exception {
-        Product product = new Product(RANDOM_ID, "product-shirt", null, null, null);
+        Product product = new Product.ProductBuilder().setId(RANDOM_ID).setName("product-shirt")
+                .build();
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
