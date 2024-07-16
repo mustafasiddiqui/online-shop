@@ -4,7 +4,7 @@ import ProductSummary from "./ProductSummary";
 export default function ProductList({ products }) {
 
   const productList = products.map(product => {
-    return <div key={product.id}><ProductSummary product={product} /></div>
+    return <ProductSummary key={product.id} product={product} />
   });
 
   return (
