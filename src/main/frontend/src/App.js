@@ -8,7 +8,7 @@ function App() {
   useEffect(() => {
     let ignore = false;
     setProducts([]);
-    fetch('http://localhost:8080/api/product')
+    fetch('/api/product')
     .then(response => response.json())
     .then(data => {
       if (!ignore) {
