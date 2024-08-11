@@ -1,12 +1,15 @@
 package com.example.shop.product;
 
 import com.example.shop.category.Category;
+import com.example.shop.config.SecurityConfiguration;
 import com.example.shop.util.TestHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -19,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
+@Import(SecurityConfiguration.class)
 public class ProductControllerTests {
 
     @Autowired
@@ -26,6 +30,9 @@ public class ProductControllerTests {
 
     @MockBean
     private ProductService productService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private static final String RANDOM_ID = "randomId";
 
