@@ -1,16 +1,20 @@
 package com.example.api.category;
 
+import com.example.api.config.SecurityConfiguration;
 import com.example.api.util.TestHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.api.util.TestHelper.AUTH_TOKEN;
+import static com.example.api.util.TestHelper.AUTH_TOKEN_HEADER_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CategoryController.class)
+@Import(SecurityConfiguration.class)
 public class CategoryControllerTests {
 
     @Autowired
@@ -29,20 +34,17 @@ public class CategoryControllerTests {
     @MockBean
     private CategoryService categoryService;
 
-//    @MockBean
-//    private UserDetailsService userDetailsService;
-
     private static final String RANDOM_ID = "randomId";
 
     Category parentCategory = new Category("id1", "category-parent", null);
 
     static final String CATEGORY_API_BASE_URL = "/api/category";
-
     @Test
     public void categoryDetails() throws Exception {
         given(categoryService.getCategoryById(RANDOM_ID)).willReturn(new Category("cat-foo", parentCategory));
 
-        mockMvc.perform(get(CATEGORY_API_BASE_URL + "/randomId"))
+        mockMvc.perform(get(CATEGORY_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
@@ -62,7 +64,8 @@ public class CategoryControllerTests {
         given(categoryService.getAllCategories())
                 .willReturn(testCategories);
 
-        mockMvc.perform(get(CATEGORY_API_BASE_URL))
+        mockMvc.perform(get(CATEGORY_API_BASE_URL)
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -88,7 +91,8 @@ public class CategoryControllerTests {
 
         mockMvc.perform(post(CATEGORY_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(newCategory)))
+                        .content(TestHelper.asJsonString(newCategory))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/api/category/randomId"));
 
@@ -105,7 +109,8 @@ public class CategoryControllerTests {
 
         mockMvc.perform(post(CATEGORY_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(newCategory)))
+                        .content(TestHelper.asJsonString(newCategory))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isConflict());
 
         verify(categoryService).getCategoryByName(any(String.class));
@@ -124,7 +129,8 @@ public class CategoryControllerTests {
 
         mockMvc.perform(put(CATEGORY_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestHelper.asJsonString(requestBody)))
+                        .content(TestHelper.asJsonString(requestBody))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNoContent());
 
         verify(categoryService).getCategoryById(RANDOM_ID);
@@ -145,7 +151,8 @@ public class CategoryControllerTests {
 
         mockMvc.perform(put(CATEGORY_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestHelper.asJsonString(requestBody)))
+                        .content(TestHelper.asJsonString(requestBody))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNotFound());
 
         verify(categoryService).getCategoryById(RANDOM_ID);
@@ -159,7 +166,8 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(RANDOM_ID))
                 .willReturn(category);
 
-        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId"))
+        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNoContent());
 
         verify(categoryService).getCategoryById(RANDOM_ID);
@@ -174,7 +182,8 @@ public class CategoryControllerTests {
         given(categoryService.getCategoryById(any(String.class)))
                 .willReturn(null);
 
-        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId"))
+        mockMvc.perform(delete(CATEGORY_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNotFound());
 
         verify(categoryService).getCategoryById(RANDOM_ID);

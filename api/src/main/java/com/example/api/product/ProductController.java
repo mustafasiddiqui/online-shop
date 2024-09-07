@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins="*", maxAge=3600)
+@CrossOrigin(origins="*", maxAge=3600, allowedHeaders = "x-api-key")
 class ProductController {
 
     private ProductService productService;

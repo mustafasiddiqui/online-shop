@@ -1,17 +1,21 @@
 package com.example.api.product;
 
 import com.example.api.category.Category;
+import com.example.api.config.SecurityConfiguration;
 import com.example.api.util.TestHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.api.util.TestHelper.AUTH_TOKEN;
+import static com.example.api.util.TestHelper.AUTH_TOKEN_HEADER_NAME;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -19,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
+@Import(SecurityConfiguration.class)
 public class ProductControllerTests {
 
     @Autowired
@@ -26,9 +31,6 @@ public class ProductControllerTests {
 
     @MockBean
     private ProductService productService;
-
-//    @MockBean
-//    private UserDetailsService userDetailsService;
 
     private static final String RANDOM_ID = "randomId";
 
@@ -46,7 +48,8 @@ public class ProductControllerTests {
                 .build();
         given(productService.getProductById(RANDOM_ID)).willReturn(product);
 
-        mockMvc.perform(get(PRODUCT_API_BASE_URL + "/randomId"))
+        mockMvc.perform(get(PRODUCT_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType((MediaType.APPLICATION_JSON)))
@@ -84,7 +87,8 @@ public class ProductControllerTests {
         given(productService.getAllProducts())
                 .willReturn(testProducts);
 
-        mockMvc.perform(get(PRODUCT_API_BASE_URL))
+        mockMvc.perform(get(PRODUCT_API_BASE_URL)
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -124,7 +128,8 @@ public class ProductControllerTests {
 
         mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(newProduct)))
+                        .content(TestHelper.asJsonString(newProduct))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/api/product/randomId"));
 
@@ -141,7 +146,8 @@ public class ProductControllerTests {
 
         mockMvc.perform(post(PRODUCT_API_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(newProduct)))
+                        .content(TestHelper.asJsonString(newProduct))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isConflict());
 
         verify(productService).getProductByName("product-new");
@@ -160,7 +166,8 @@ public class ProductControllerTests {
 
         mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(requestBody)))
+                        .content(TestHelper.asJsonString(requestBody))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNoContent());
 
         verify(productService).getProductById(RANDOM_ID);
@@ -178,7 +185,8 @@ public class ProductControllerTests {
 
         mockMvc.perform(put(PRODUCT_API_BASE_URL + "/randomId")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(TestHelper.asJsonString(requestBody)))
+                        .content(TestHelper.asJsonString(requestBody))
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNotFound());
 
         verify(productService).getProductById(RANDOM_ID);
@@ -191,7 +199,8 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(product);
 
-        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId"))
+        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNoContent());
 
         verify(productService).getProductById(RANDOM_ID);
@@ -203,7 +212,8 @@ public class ProductControllerTests {
         given(productService.getProductById(RANDOM_ID))
                 .willReturn(null);
 
-        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId"))
+        mockMvc.perform(delete(PRODUCT_API_BASE_URL + "/randomId")
+                        .header(AUTH_TOKEN_HEADER_NAME, AUTH_TOKEN))
                 .andExpect(status().isNotFound());
 
         verify(productService).getProductById(RANDOM_ID);
