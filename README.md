@@ -19,7 +19,7 @@ This is a project that attempts to implement a simple e-commerce API with a Reac
 From the `api` folder of the project, run:
 * `mvn clean install`
 * `java -jar target/api-{version}-SNAPSHOT.jar`
-* Api endpoints available at http://localhost:9090/ for CRUD operations (**Note:** requests require that the `X-API-KEY` be sent with the value of `SHOP-API-KEY`):
+* Api endpoints available at http://localhost:9000/ for CRUD operations (**Note:** requests require that the `X-API-KEY` be sent with the value of `SHOP-API-KEY`):
   * `/api/category`
   * `/api/product`
 
