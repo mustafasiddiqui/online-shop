@@ -43,3 +43,12 @@
   gap: 10px;
   justify-content: center;
 }
+
+.productSummary {
+  max-height: 50vh;
+}
+
+.productImage {
+  max-height: 50%;
+  object-fit: contain;
+}
