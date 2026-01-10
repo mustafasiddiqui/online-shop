@@ -1,8 +1,6 @@
 package com.example.shop.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
@@ -13,17 +11,10 @@ import java.util.Set;
 @Document
 public class ShopUser implements UserDetails {
 
-    @Getter
     private @MongoId ObjectId id;
-    @Getter
-    @Setter
     private String username;
-    @Getter
-    @Setter
     @JsonIgnore
     private String password;
-    @Getter
-    @Setter
     private Set<UserRole> userRoles;
 
     @Override
@@ -49,5 +40,35 @@ public class ShopUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 }
